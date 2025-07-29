@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using UomaWeb;
 
 namespace FMGames {
 
@@ -14,7 +17,6 @@ namespace FMGames {
         [SerializeField] GameObject tutorial;
 
         [SerializeField] Level level;
-
         private void Awake() {
             _instance = this;
 
@@ -23,20 +25,31 @@ namespace FMGames {
 
         // Start is called before the first frame update
         void Start() {
-            levelNum = PlayerPrefs.GetInt(DataCollection.LEVEL_NUM);
+            StartCoroutine(UomaController.Instance.GetVirtualCurrency((int currency) =>
+            {
+                StartCoroutine(UomaController.Instance.GetCompleteLevel((int result) =>
+                {
+                    levelNum = UomaDataManager.CompleteLevel;
 
-            GameUi._instance.InitLevel(levelNum);
-            level.Init(levelNum);
+                    GameUi._instance.InitLevel(levelNum);
+                    level.Init(levelNum);
+                }));
+            }));
         }
 
         /// <summary>
         /// Called when the player wins a level
         /// </summary>
         private void Victory() {
-            PlayerPrefs.SetInt(DataCollection.LEVEL_NUM, levelNum + 1);
-
-            ChestManager._instance.AddProgression(Random.Range(18, 25));
-            GameUi._instance.ShowVictory();
+            StartCoroutine(UomaController.Instance.CompleteLevel(UomaDataManager.CurrLevel, 3, (result) =>
+            {
+                if (result.successCode == 0)
+                {
+                    // ChestManager._instance.AddProgression(Random.Range(18, 25));
+                    GameUi._instance.ShowVictory();
+                }
+            }));
+            
         }
 
         /// <summary>

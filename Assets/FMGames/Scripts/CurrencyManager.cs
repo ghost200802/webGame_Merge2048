@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UomaWeb;
 
 namespace FMGames {
 
@@ -17,14 +18,13 @@ namespace FMGames {
 
         // Use this for initialization
         void Start() {
-            coins = PlayerPrefs.GetInt("COINS", 100);
-
-
-            SetTexts();
         }
 
         // Update is called once per frame
-        void Update() {
+        void Update()
+        {
+            coins = UomaDataManager.GetVirtualCurrency();
+            SetTexts();
         }
 
         public static string GetSuffix(long num) {
